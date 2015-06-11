@@ -5,9 +5,20 @@ var traverseDomAndCollectElements = function(matchFunc, startEl) {
     startEl = document.body;
   }
 
-  // your code here
-  // traverse the DOM tree and collect matching elements in resultSet
-  // use matchFunc to identify matching elements
+  var elements = [startEl];
+  while (elements.length !== 0) {
+    var currentElement = elements.shift();
+    var children = [];
+    for (var i = 0; i < currentElement.children.length; i++) {
+      children.push(currentElement.children[i]);
+    }
+    children.forEach(function(child) {
+      elements.push(child);
+    });
+    if (matchFunc(currentElement)) {
+      resultSet.push(currentElement);
+    }
+  }
 
   return resultSet;
 };
@@ -17,7 +28,24 @@ var traverseDomAndCollectElements = function(matchFunc, startEl) {
 // return one of these types: id, class, tag.class, tag
 //
 var selectorTypeMatcher = function(selector) {
-  // your code here
+  var type = '';
+  if (selector[0] === '#') {
+    type += 'id';
+  }
+  else if (selector[0] === '.') {
+    type += 'class';
+  }
+  else {
+    type += 'tag';
+  }
+  var remaining = selector.slice(1);
+  if (/\./.test(remaining)) {
+    type += '.class';
+  }
+  else if (/#/.test(remaining)) {
+    type += '#id';
+  }
+  return type;
 };
 
 
@@ -30,16 +58,24 @@ var matchFunctionMaker = function(selector) {
   var selectorType = selectorTypeMatcher(selector);
   var matchFunction;
   if (selectorType === "id") {
-    // define matchFunction for id
-
+    matchFunction = function(element) {
+      return element.id === selector.slice(1);
+    };
   } else if (selectorType === "class") {
-    // define matchFunction for class
-    
+    matchFunction = function(element) {
+      var classes = element.className.split(' ');
+      return classes.some(function(c) {return c === selector.slice(1)});
+    };
   } else if (selectorType === "tag.class") {
-    // define matchFunction for tag.class
-    
+    matchFunction = function(element) {
+      var selectors = selector.split('.');
+      var classes = element.className.split(' ');
+      return classes.some(function(c) {return c === selectors[1]}) && element.tagName.toLowerCase() === selectors[0];
+    };   
   } else if (selectorType === "tag") {
-    // define matchFunction for tag
+    matchFunction = function(element) {
+      return element.tagName.toLowerCase() === selector;
+    };
     
   }
   return matchFunction;
