@@ -107,5 +107,40 @@ describe("$ selector function", function() {
     elements = $('h2.small');
     expect(elements.length).toEqual(2);
   });
+
+  it("should select by tag and tag child", function() {
+    elements = $('div > img');
+    expect(elements.length).toEqual(7);
+  });
+
+  it("should select by tag within tag", function(){
+    elements = $("body img");
+    expect(elements.length).toEqual(7);
+  });
+
+  it("should accept any number of arguments", function(){
+    elements = $("body > div > img");
+    expect(elements.length).toEqual(7);
+  });
+
+  it("should select all tags with a specific attribute", function(){
+    elements = $('img[width="50"]');
+    expect(elements.length).toEqual(3);
+  });
+
+  it("should support chaining with find", function(){
+    elements = $('div').find('img');
+    expect(elements.length).toEqual(7);
+  });
+
+  it("should support chaining with get", function(){
+    element = $('div').find('img').get(2);
+    expect(element.src).toEqual("http://placehold.it/150x50/5A9FCA/FFF");
+  });
+
+  it("should support chaining with children", function(){
+    elements = $('div').children('img');
+    expect(elements.length).toEqual(7);
+  });
   
 });
